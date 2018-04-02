@@ -1,23 +1,26 @@
-mysql_service:
+version: '2'
+services:
+  mysql:
     image: mysql:5.7
     environment:
-        MYSQL_ROOT_PASSWORD: pass
-        MYSQL_DATABASE: testdb
-        MYSQL_USER: test
-        MYSQL_PASSWORD: testtest
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: test
+      MYSQL_PASSWORD: testtest
     volumes:
-        #- ./my.cnf:/etc/mysql/conf.d/my.cnf
-        - /var/lib/mysql
-    #container_name: laravel_mysql_container
-
-php_service:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+      - /var/lib/mysql
+  php:
     build: php
     ports:
-        - "80:80"
+      - "8503:80"
+      #- "9000:9000"
+      #- "8877:8877"
     volumes:
-        - ./html:/var/www/html
-        #- ./apache2.conf:/etc/apache2/apache2.conf
-        - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
-    links:
-        - mysql_service:mysql
-    #container_name: laravel_php_container
+      - ./html:/var/www/html
+      - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      - mysql
+    environment:
+      TZ: Asia/Tokyo
